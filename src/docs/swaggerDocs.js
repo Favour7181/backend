@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://backend-drab-iota.vercel.app',
       },
     ],
   },
