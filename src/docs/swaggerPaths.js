@@ -1,77 +1,101 @@
-
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication endpoints
+ */
 
 /**
  * @swagger
  * /register:
  *   post:
  *     summary: Register a new user
- *     description: Endpoint for user registration
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - firstname
+ *               - lastname
+ *               - email
+ *               - password
  *             properties:
- *               name:
+ *               firstname:
  *                 type: string
+ *                 description: User's first name
+ *               lastname:
+ *                 type: string
+ *                 description: User's last name
  *               email:
  *                 type: string
+ *                 description: User's email address
  *               password:
  *                 type: string
+ *                 description: User's password
  *     responses:
  *       201:
- *         description: User created successfully
+ *         description: User registered successfully
  *       400:
- *         description: Email already exists
+ *         description: Invalid input or email already exists
+ *       500:
+ *         description: Server error
  */
 
 /**
  * @swagger
  * /login:
  *   post:
- *     summary: Log in an existing user
- *     description: Endpoint for user login
+ *     summary: Log in a user
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - email
+ *               - password
  *             properties:
  *               email:
  *                 type: string
+ *                 description: User's email address
  *               password:
  *                 type: string
+ *                 description: User's password
  *     responses:
  *       200:
  *         description: Login successful
  *       400:
- *         description: Invalid credentials
+ *         description: Invalid email or password
+ *       403:
+ *         description: Email not verified
+ *       500:
+ *         description: Server error
  */
 
 /**
  * @swagger
- * /user:
+ * /verify/{token}:
  *   get:
- *     summary: Get user information
- *     description: Retrieve details of the currently authenticated user
- *     security:
- *       - bearerAuth: []
+ *     summary: Verify user email with token
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Verification token sent to user's email
  *     responses:
  *       200:
- *         description: User data retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 email:
- *                   type: string
- *       401:
- *         description: Unauthorized
+ *         description: Email verified successfully
+ *       400:
+ *         description: Invalid or expired token
+ *       500:
+ *         description: Server error
  */
+
