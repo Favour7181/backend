@@ -5,6 +5,8 @@ const { findUserByEmail, findUserById } = require('../models/UserModel');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 const { validationResult } = require('express-validator');
+const cloudinary = require('../config/cloudinary'); // Cloudinary configuration file
+const fs = require('fs'); // File system module for file cleanup
 
 
 
@@ -215,43 +217,52 @@ module.exports = { deleteAccount };
 
 
 // POST /api/user/kyc
-
-
-
 const kycVerification = async (req, res) => {
-
-  
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  // const errors = validationResult(req);
+  // if (!errors.isEmpty()) {
+  //   return res.status(400).json({ errors: errors.array() });
+  // }
 
   const { bvn } = req.body;
-  const selfie = req.file; 
+  const selfie = req.file; // Selfie image file uploaded by multer
   const userId = req.user.id;
 
   if (!bvn || !selfie) {
     return res.status(400).json({ message: 'BVN and selfie are required.' });
-}
+  }
 
   try {
-    const selfieURL = selfie.path
+    // Upload the selfie image to Cloudinary
+    const result = await cloudinary.uploader.upload(selfie.path, {
+      folder: 'kyc_verifications', // Cloudinary folder
+    });
 
+    const selfieURL = result.secure_url; // Get the URL of the uploaded image
+
+    // Clean up the temporary file
+    fs.unlinkSync(selfie.path);
+
+    // Update the user's record in the database
     await pool.query(
-      `UPDATE users SET bvn = $1, selfie = $2, kyc_verified = TRUE WHERE id = $3`,
+      `UPDATE users SET bvn = $1, selfie_url = $2, kyc_verified = TRUE WHERE id = $3`,
       [bvn, selfieURL, userId]
     );
 
     res.json({ message: 'KYC verification submitted successfully' });
   } catch (error) {
+    console.error('Error in KYC verification:', error);
+
+    // Clean up the file in case of an error
+    if (fs.existsSync(selfie.path)) {
+      fs.unlinkSync(selfie.path);
+    }
+
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-// module.exports = {
-//   getUser,
-// };
+
+
 
 module.exports = {
   register,
