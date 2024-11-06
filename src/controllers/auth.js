@@ -16,7 +16,7 @@ const validateRegister = [
     .isEmail().withMessage('Valid email is required')
     .normalizeEmail(),
   check('password')
-    .isLength({ min: 8 }).withMessage('Password must be at least 6 characters long')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
     .trim().escape(),
 ];
 
@@ -52,21 +52,23 @@ const register = async (req, res) => {
     // const verificationToken = createUser(firstname, lastname, email, password)
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+    // const verificationToken = crypto.randomBytes(32).toString('hex');
+    // const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     // Save the new user to the database
     const newUser = await pool.query(
-      `INSERT INTO users (firstname, lastname, email, password, verification_token, verification_token_expires)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [firstname, lastname, email, hashedPassword, verificationToken, verificationTokenExpires]
+      `INSERT INTO users (firstname, lastname, email, password)
+       VALUES ($1, $2, $3, $4) RETURNING id, firstname, lastname, email`,
+      [firstname, lastname, email, hashedPassword]
     );
+
+    const userData = newUser.rows[0];
 
 
     // Send verification email
-    await sendVerificationEmail(email, verificationToken);
+    // await sendVerificationEmail(email, verificationToken);
 
-    res.status(201).json({ success:true, message: 'User registered. Please check your email to verify your account.' });
+    res.status(201).json({ success:true, message: 'User registered' });
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ error: 'Server error' });
@@ -120,9 +122,9 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    if (!user.is_verified) {
-      return res.status(403).json({ error: 'Email not verified' });
-    }
+    // if (!user.is_verified) {
+    //   return res.status(403).json({ error: 'Email not verified' });
+    // }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn:process.env.JWT_EXPIRES_IN });
     res.json({ success:true, message: 'Login successful', token });

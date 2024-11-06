@@ -1,101 +1,142 @@
-/**
- * @swagger
- * tags:
- *   name: Auth
- *   description: Authentication endpoints
- */
 
 /**
  * @swagger
- * /register:
+ * /auth/login:
  *   post:
- *     summary: Register a new user
- *     tags: [Auth]
+ *     summary: Login a user
+ *     description: Authenticates a user and returns a JWT.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - firstname
- *               - lastname
- *               - email
- *               - password
- *             properties:
- *               firstname:
- *                 type: string
- *                 description: User's first name
- *               lastname:
- *                 type: string
- *                 description: User's last name
- *               email:
- *                 type: string
- *                 description: User's email address
- *               password:
- *                 type: string
- *                 description: User's password
- *     responses:
- *       201:
- *         description: User registered successfully
- *       400:
- *         description: Invalid input or email already exists
- *       500:
- *         description: Server error
- */
-
-/**
- * @swagger
- * /login:
- *   post:
- *     summary: Log in a user
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
  *             properties:
  *               email:
  *                 type: string
- *                 description: User's email address
  *               password:
  *                 type: string
- *                 description: User's password
  *     responses:
  *       200:
  *         description: Login successful
  *       400:
- *         description: Invalid email or password
- *       403:
- *         description: Email not verified
- *       500:
- *         description: Server error
+ *         description: Invalid credentials
  */
 
 /**
  * @swagger
- * /verify/{token}:
- *   get:
- *     summary: Verify user email with token
- *     tags: [Auth]
- *     parameters:
- *       - in: path
- *         name: token
- *         required: true
- *         schema:
- *           type: string
- *         description: Verification token sent to user's email
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstname:
+ *                 type: string
+ *               lastname:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
  *     responses:
- *       200:
- *         description: Email verified successfully
+ *       201:
+ *         description: User registered successfully
  *       400:
- *         description: Invalid or expired token
- *       500:
- *         description: Server error
+ *         description: User already exists or validation error
  */
 
+/**
+ * @swagger
+ * /auth/change-password:
+ *   post:
+ *     summary: Change user password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *               confirmPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       400:
+ *         description: Validation error
+ */
+
+/**
+ * @swagger
+ * /auth/update-profile:
+ *   put:
+ *     summary: Update user profile
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstname:
+ *                 type: string
+ *               lastname:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ */
+
+/**
+ * @swagger
+ * /auth/delete-account:
+ *   delete:
+ *     summary: Delete user account
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Account deleted successfully
+ *       400:
+ *         description: Incorrect password
+ */
+
+/**
+ * @swagger
+ * /auth/kyc:
+ *   post:
+ *     summary: Submit KYC information
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bvn:
+ *                 type: string
+ *               selfie:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: KYC submitted successfully
+ */
