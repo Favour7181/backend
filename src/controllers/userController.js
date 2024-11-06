@@ -185,8 +185,8 @@ const deleteAccount = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    console.log('User ID:', userId);  // Log user ID to check if it's set properly
-    console.log('Password from request:', password);  // Log password to check input
+    // console.log('User ID:', userId);  // Log user ID to check if it's set properly
+    // console.log('Password from request:', password);  // Log password to check input
 
     // Retrieve the user from the database
     const user = await findUserById(userId);
@@ -201,11 +201,11 @@ const deleteAccount = async (req, res) => {
 
     // Delete the user from the database
     const deleteResult = await pool.query(`DELETE FROM users WHERE id = $1`, [userId]);
-    console.log('Delete result:', deleteResult);  // Log the result of the delete query
+    // console.log('Delete result:', deleteResult);  // Log the result of the delete query
 
     res.json({ message: 'Account deleted successfully' });
   } catch (error) {
-    console.error('Error deleting account:', error);  // Log the error
+    // console.error('Error deleting account:', error);  // Log the error
     res.status(500).json({ error: 'Server error' });
   }
 };
