@@ -2,7 +2,7 @@ const express = require('express');
 // const { register, login, validateRegister, validateLogin, verifyEmail, validateVerifyEmail } = require('../controllers/auth');
 const authMiddleware = require("../middlewares/authMiddleware");
 const { register, login, changePassword, updateProfile, deleteAccount, kycVerification } = require('../controllers/userController');
-const { validateRegistration, validateLogin, validatePasswordChange, validateProfileUpdate, validateAccountDeletion, validateKYC } = require('../middlewares/validatorsMiddlewares');
+const { validateRegistration, validateLogin, validatePasswordChange, validateAccountDeletion, validateKYC } = require('../middlewares/validatorsMiddlewares');
 
 const multer = require('multer');
 const {cloudstorage} = require('../config/cloudinary')
@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 
 
 // Register route
-router.post('/register', validateRegistration, register);
+router.post('/register',validateRegistration, register);
 
 // Login route
 router.post('/login', validateLogin, login);
@@ -30,7 +30,7 @@ router.post('/login', validateLogin, login);
 router.put('/change-password', authMiddleware, validatePasswordChange, changePassword);
 
 // Update Profile route
-router.put('/update-profile', authMiddleware, validateProfileUpdate, updateProfile);
+router.put('/update', authMiddleware, updateProfile);
 
 // Delete Account route
 router.delete('/delete-account', authMiddleware, validateAccountDeletion, deleteAccount);

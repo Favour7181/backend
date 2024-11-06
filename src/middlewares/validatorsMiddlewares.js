@@ -18,10 +18,10 @@ const validatePasswordChange = [
     check('confirmPassword').isLength({ min: 8 }).withMessage('New password must be at least 8 characters long')
   ];
 
-const validateProfileUpdate = [
-    check('name').trim().notEmpty().withMessage('Name is required').escape(),
-    check('number').isMobilePhone().withMessage('Please provide a valid phone number').optional(),
-  ];
+// const validateProfileUpdate = [
+//     check('name').trim().escape(),
+//     check('number').trim().escape(),
+//   ];
 
 const validateAccountDeletion = [
     check('password').notEmpty().withMessage('Password is required for account deletion').escape(),
@@ -35,7 +35,6 @@ module.exports = {
     validateRegistration,
     validateLogin,
     validatePasswordChange,
-    validateProfileUpdate,
     validateKYC,
     validateAccountDeletion,
 }

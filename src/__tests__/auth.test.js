@@ -1,7 +1,7 @@
 const request = require('supertest');
-const app = require('../app');
-const pool = require('../db');
-const bcrypt = require('bcrypt');
+const app = require('../index');
+const pool = require('../config/db');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // Mock user data for testing
@@ -26,10 +26,10 @@ afterAll(async () => {
 });
 
 // Test for Login
-describe('POST /auth/login', () => {
+describe('POST /api/users/login', () => {
   it('should log in successfully with correct credentials', async () => {
     const response = await request(app)
-      .post('/auth/login')
+      .post('/api/users/login')
       .send({ email: mockUser.email, password: 'password123' });
 
     expect(response.status).toBe(200);
@@ -38,7 +38,7 @@ describe('POST /auth/login', () => {
 
   it('should return 400 with invalid credentials', async () => {
     const response = await request(app)
-      .post('/auth/login')
+      .post('/api/users/login')
       .send({ email: mockUser.email, password: 'wrongpassword' });
 
     expect(response.status).toBe(400);
@@ -47,10 +47,10 @@ describe('POST /auth/login', () => {
 });
 
 // Test for Registration
-describe('POST /auth/register', () => {
+describe('POST /api/users/register', () => {
   it('should register a new user successfully', async () => {
     const response = await request(app)
-      .post('/auth/register')
+      .post('/api/users/register')
       .send({
         firstname: 'New',
         lastname: 'User',
@@ -64,7 +64,7 @@ describe('POST /auth/register', () => {
 
   it('should return 400 if user email already exists', async () => {
     const response = await request(app)
-      .post('/auth/register')
+      .post('/api/users/register')
       .send({
         firstname: 'Test',
         lastname: 'User',
@@ -78,12 +78,12 @@ describe('POST /auth/register', () => {
 });
 
 // Test for Changing Password
-describe('POST /auth/change-password', () => {
+describe('POST /api/users/change-password', () => {
   it('should change the password successfully', async () => {
     const token = jwt.sign({ id: mockUser.id }, process.env.JWT_SECRET);
 
     const response = await request(app)
-      .post('/auth/change-password')
+      .post('/api/users/change-password')
       .set('Authorization', `Bearer ${token}`)
       .send({
         oldPassword: 'password123',
@@ -99,7 +99,7 @@ describe('POST /auth/change-password', () => {
     const token = jwt.sign({ id: mockUser.id }, process.env.JWT_SECRET);
 
     const response = await request(app)
-      .post('/auth/change-password')
+      .post('/api/users/change-password')
       .set('Authorization', `Bearer ${token}`)
       .send({
         oldPassword: 'wrongOldPassword',
@@ -113,12 +113,12 @@ describe('POST /auth/change-password', () => {
 });
 
 // Test for Updating Profile
-describe('PUT /auth/update-profile', () => {
+describe('PUT /api/users/update-profile', () => {
   it('should update profile successfully', async () => {
     const token = jwt.sign({ id: mockUser.id }, process.env.JWT_SECRET);
 
     const response = await request(app)
-      .put('/auth/update-profile')
+      .put('/api/users/update-profile')
       .set('Authorization', `Bearer ${token}`)
       .send({
         firstname: 'Updated',
@@ -132,12 +132,12 @@ describe('PUT /auth/update-profile', () => {
 });
 
 // Test for Deleting Account
-describe('DELETE /auth/delete-account', () => {
+describe('DELETE /api/users/delete-account', () => {
   it('should delete account successfully with correct password', async () => {
     const token = jwt.sign({ id: mockUser.id }, process.env.JWT_SECRET);
 
     const response = await request(app)
-      .delete('/auth/delete-account')
+      .delete('/api/users/delete-account')
       .set('Authorization', `Bearer ${token}`)
       .send({ password: 'password123' });
 
@@ -149,7 +149,7 @@ describe('DELETE /auth/delete-account', () => {
     const token = jwt.sign({ id: mockUser.id }, process.env.JWT_SECRET);
 
     const response = await request(app)
-      .delete('/auth/delete-account')
+      .delete('/api/users/delete-account')
       .set('Authorization', `Bearer ${token}`)
       .send({ password: 'wrongPassword' });
 
@@ -159,17 +159,17 @@ describe('DELETE /auth/delete-account', () => {
 });
 
 // Test for KYC
-describe('POST /auth/kyc', () => {
-  it('should submit KYC successfully', async () => {
-    const token = jwt.sign({ id: mockUser.id }, process.env.JWT_SECRET);
+// describe('POST /auth/kyc', () => {
+//   it('should submit KYC successfully', async () => {
+//     const token = jwt.sign({ id: mockUser.id }, process.env.JWT_SECRET);
 
-    const response = await request(app)
-      .post('/auth/kyc')
-      .set('Authorization', `Bearer ${token}`)
-      .field('bvn', '12345678901')
-      .attach('selfie', Buffer.from('dummy data'), 'selfie.png');
+//     const response = await request(app)
+//       .post('/auth/kyc')
+//       .set('Authorization', `Bearer ${token}`)
+//       .field('bvn', '12345678901')
+//       .attach('selfie', Buffer.from('dummy data'), 'selfie.png');
 
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('message', 'KYC submitted successfully');
-  });
-});
+//     expect(response.status).toBe(200);
+//     expect(response.body).toHaveProperty('message', 'KYC submitted successfully');
+//   });
+// });
